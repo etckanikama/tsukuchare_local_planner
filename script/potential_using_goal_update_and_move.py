@@ -9,8 +9,8 @@ from tf.transformations import euler_from_quaternion
 enemy1_x , enemy1_y = 100, 100
 # enemy2_x , enemy2_y = 0.1, 0.1
 # enemy3_x , enemy3_y = -0.5, 1
-
-goals = [[1,0],[1,1],[0,1],[0,0]]
+WAYPOINT_CSV = '/home/hirayama-d/tsukuchare22_ws/src/potential_planner/data/waypoint_csv/sample_waypoint.csv'
+# goals = [[1,0],[1,1],[0,1],[0,0]]
 
 
 class ymbcNode:
@@ -62,13 +62,18 @@ def main():
     node = ymbcNode()
     cmd_vel = Twist()
 
+    delta = 0.1
     rate = rospy.Rate(10)
     node.x, node.y = 0, 0
     cmd_vel.linear.x = 0.1
 
-    delta = 0.1
+    waypoint = [
+        list(
+            map(float,line.rstrip().split(","))
+            ) for line in open(WAYPOINT_CSV).readlines()]
 
-    goal_x, goal_y = goals[0][0], goals[0][1] 
+    # goal_x, goal_y = goals[0][0], goals[0][1] 
+    goal_x, goal_y = waypoint[0][0], waypoint[0][1] 
     idx = 0
 
     while not rospy.is_shutdown():
@@ -81,7 +86,7 @@ def main():
         v = math.sqrt(vx*vx + vy*vy)
         #print("vx,vy,v,cmd_vel, node.x, node.y ,goal_x,goal_y ___ ",vx, vy,v, cmd_vel.linear.x,node.x,node.y,goal_x,goal_y)
         # print("odom.x, odom.y ___ ",node.x,node.y)
-        # print("goal_x, goal_y ___ ",goal_x,goal_y)
+        print("goal_x, goal_y ___ ",goal_x,goal_y)
 
         vx /= v / cmd_vel.linear.x
         vy /= v / cmd_vel.linear.x
@@ -105,11 +110,11 @@ def main():
 
         if euclid_distance < 0.1:
             idx += 1
-            if len(goals) == idx:
+            if len(waypoint) == idx:
                 cmd_vel.angular.z = 0.0
                 cmd_vel.linear.x = 0.0  
                 break
-            goal_x, goal_y = goals[idx][0], goals[idx][1] #update goal
+            goal_x, goal_y = waypoint[idx][0], waypoint[idx][1] #update goal
         
    
 
