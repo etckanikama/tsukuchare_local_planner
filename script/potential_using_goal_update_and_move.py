@@ -67,6 +67,7 @@ def main():
     node.x, node.y = 0, 0
     cmd_vel.linear.x = 0.1
 
+    # waypoint_csv to list
     waypoint = [
         list(
             map(float,line.rstrip().split(","))
@@ -74,6 +75,7 @@ def main():
 
     # goal_x, goal_y = goals[0][0], goals[0][1] 
     goal_x, goal_y = waypoint[0][0], waypoint[0][1] 
+    status = waypoint[0][2] # 5は前進中
     idx = 0
 
     while not rospy.is_shutdown():
@@ -97,8 +99,6 @@ def main():
             next_theta -= 2*math.pi
         elif next_theta <= -math.pi:
             next_theta += 2*math.pi
-        
-
         # print("yaw",node.yaw)
         print("next_theta",next_theta)
 
@@ -107,14 +107,28 @@ def main():
         
         euclid_distance = math.sqrt((goal_x - node.x)**2 + (goal_y - node.y)**2)
         # print("distance",euclid_distance)
+        
 
         if euclid_distance < 0.1:
-            idx += 1
-            if len(waypoint) == idx:
+            print("status",waypoint[idx][2])
+                
+
+            if waypoint[idx][2] == 8: # When "8" is received, stop for 2 seconds.
+                cmd_vel.angular.z = 0.0
+                node.cmd_pub.publish(cmd_vel)
+                rospy.sleep(2.0)
+                
+                
+
+            if len(waypoint) == idx: # Finish when you exit the array.
                 cmd_vel.angular.z = 0.0
                 cmd_vel.linear.x = 0.0  
                 break
-            goal_x, goal_y = waypoint[idx][0], waypoint[idx][1] #update goal
+        
+            idx += 1
+            goal_x, goal_y = waypoint[idx][0], waypoint[idx][1]
+
+
         
    
 
