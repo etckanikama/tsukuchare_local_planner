@@ -126,7 +126,7 @@ include_directories(
 )
 
 
-add_executable(dummy_point_publisher src/sample.cpp)
+add_executable(dummy_point_publisher src/laser_to_clustering.cpp)
 
 
 target_link_libraries(dummy_point_publisher
