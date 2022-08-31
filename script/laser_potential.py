@@ -122,59 +122,59 @@ def main():
         print("scan_range_len_363", node.scan.ranges[int(len(node.scan.ranges)/2)])
 
         # # laserscanから受け取った距離データを座標に変換
-        # for i in range(360, 367):
+        for i in range(360, 367):
             
-        #     distance = list(node.scan.ranges)[i]
+            distance = list(node.scan.ranges)[i]
             
-        #     if not math.isnan(distance):
-        #         if distance < 0.5:
-        #             current_index = i
+            if not math.isnan(distance):
+                if distance < 0.5:
+                    current_index = i
                     
-        #             angle_diff = CENTER_ANGLE_INDEX - current_index
-        #             theta = STEP_ANGLE * (math.pi / 180) * angle_diff
-        #             angle_tate = distance*math.cos(theta)
-        #             angle_yoko = distance*math.sin(theta)
-        #             angle_coodinate = [angle_tate, angle_yoko]
-        #             angle_xy[current_index] = angle_coodinate
-        #         # print("i:{}, {} ,{},theta,{}".format(i, distance, type(distance),theta))
-        # # objectの平均座標登録(enemy1_x, enemy1_y)
+                    angle_diff = CENTER_ANGLE_INDEX - current_index
+                    theta = STEP_ANGLE * (math.pi / 180) * angle_diff
+                    angle_tate = distance*math.cos(theta)
+                    angle_yoko = distance*math.sin(theta)
+                    angle_coodinate = [angle_tate, angle_yoko]
+                    angle_xy[current_index] = angle_coodinate
+                # print("i:{}, {} ,{},theta,{}".format(i, distance, type(distance),theta))
+        # objectの平均座標登録(enemy1_x, enemy1_y)
 
-        # # if len(angle_xy)
-        # print("aa:",angle_xy)
+        # if len(angle_xy)
+        print("aa:",angle_xy)
         
-        # if len(angle_xy) == 0: #眼の前に障害物がなかったら飛ばす 
-        #     continue
+        if len(angle_xy) == 0: #眼の前に障害物がなかったら飛ばす 
+            continue
 
-        # for k, v in enumerate(angle_xy.items()):
-        #     print(k,v, v[1][0]) # 0 (360, [0.0849849008462796, 0.0016021173926615132]) 0.0849849008462796
+        for k, v in enumerate(angle_xy.items()):
+            print(k,v, v[1][0]) # 0 (360, [0.0849849008462796, 0.0016021173926615132]) 0.0849849008462796
 
-        #     tate = v[1][0] 
-        #     yoko = v[1][1]
-        #     enemy1_x += tate
-        #     enemy1_y += yoko
+            tate = v[1][0] 
+            yoko = v[1][1]
+            enemy1_x += tate
+            enemy1_y += yoko
 
-        # print("len_angle_xy",len(angle_xy))
-        # # enemy1_x /= len(angle_xy)
-        # # enemy1_y /= len(angle_xy)
+        print("len_angle_xy",len(angle_xy))
+        # enemy1_x /= len(angle_xy)
+        # enemy1_y /= len(angle_xy)
         
 
-        # print("node.x={}, node.y={},   enemy_x={},enemy_y={}".format(node.x,node.y,enemy1_x,enemy1_y))
+        print("node.x={}, node.y={},   enemy_x={},enemy_y={}".format(node.x,node.y,enemy1_x,enemy1_y))
         
-        # vx = -(get_pot(node.x + delta, node.y, enemy1_x, enemy1_y) - get_pot(node.x,node.y, enemy1_x, enemy1_y))/ delta
-        # vy = -(get_pot(node.x, node.y + delta, enemy1_x, enemy1_y) - get_pot(node.x,node.y, enemy1_x, enemy1_y))/ delta
-        # v = math.sqrt(vx*vx + vy*vy)
+        vx = -(get_pot(node.x + delta, node.y, enemy1_x, enemy1_y) - get_pot(node.x,node.y, enemy1_x, enemy1_y))/ delta
+        vy = -(get_pot(node.x, node.y + delta, enemy1_x, enemy1_y) - get_pot(node.x,node.y, enemy1_x, enemy1_y))/ delta
+        v = math.sqrt(vx*vx + vy*vy)
 
-        # vx /= v / cmd_vel.linear.x
-        # vy /= v / cmd_vel.linear.x
+        vx /= v / cmd_vel.linear.x
+        vy /= v / cmd_vel.linear.x
         
-        # next_theta = math.atan2(vy, vx) - node.yaw
+        next_theta = math.atan2(vy, vx) - node.yaw
 
-        # cmd_vel.angular.z = next_theta
+        cmd_vel.angular.z = next_theta
 
 
-        # if (goal_x - node.x < 0.02) and (goal_y - node.y < 0.02):
-        #     cmd_vel.angular.z = 0.0
-        #     cmd_vel.linear.x = 0.0 
+        if (goal_x - node.x < 0.02) and (goal_y - node.y < 0.02):
+            cmd_vel.angular.z = 0.0
+            cmd_vel.linear.x = 0.0 
 
         
         rate.sleep()
