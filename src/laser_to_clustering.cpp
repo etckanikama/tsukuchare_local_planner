@@ -66,17 +66,17 @@ int main(int argc, char **argv)
     int min_cluster_size = 1;
 
     // gnuplot
-    FILE *gnu;
+    // FILE *gnu;
 
-    gnu = popen("gnuplot -persist", "w");
-    // fprintf(gnu, "unset key\n");
-    fprintf(gnu, "set xrange [-4.5:4.5]\n"); // x範囲はここで変える-6:6
-    fprintf(gnu, "set yrange [-4.5:4.5]\n"); // y範囲はここで変える-5:5
-    fprintf(gnu, "set xlabel 'x(m)'\n");
-    fprintf(gnu, "set ylabel 'y(m)'\n");
-    fprintf(gnu, "set size ratio -1\n");
-    fprintf(gnu, "set xlabel font 'Arial,20'\n");
-    fprintf(gnu, "set ylabel font 'Arial,20'\n");
+    // gnu = popen("gnuplot -persist", "w");
+    // // fprintf(gnu, "unset key\n");
+    // fprintf(gnu, "set xrange [-4.5:4.5]\n"); // x範囲はここで変える-6:6
+    // fprintf(gnu, "set yrange [-4.5:4.5]\n"); // y範囲はここで変える-5:5
+    // fprintf(gnu, "set xlabel 'x(m)'\n");
+    // fprintf(gnu, "set ylabel 'y(m)'\n");
+    // fprintf(gnu, "set size ratio -1\n");
+    // fprintf(gnu, "set xlabel font 'Arial,20'\n");
+    // fprintf(gnu, "set ylabel font 'Arial,20'\n");
 
     float x[1080] = {0};
     float y[1080] = {0};
@@ -102,24 +102,21 @@ int main(int argc, char **argv)
                 pcl::PointXYZ new_point;
                 if (!(scan.ranges[i] < scan.range_min || scan.ranges[i] > scan.range_max || std::isnan(scan.ranges[i])))
                 {
-                    std::cout << "angle_min " << scan.angle_min << std::endl;
-                    std::cout << "angle_max " << scan.angle_max << std::endl;
-                    std::cout << "angle_inclement " << scan.angle_increment << std::endl;
+                    // std::cout << "angle_min " << scan.angle_min << std::endl;
+                    // std::cout << "angle_max " << scan.angle_max << std::endl;
+                    // std::cout << "angle_inclement " << scan.angle_increment << std::endl;
                     float theta = scan.angle_min + i * scan.angle_increment;
                     x[i] = scan.ranges[i] * cosf(theta);
                     y[i] = scan.ranges[i] * sinf(theta);
 
-                    std::cout << "x " << i << ":" << x[i] << std::endl;
-                    std::cout << "y " << i << ":" << y[i] << std::endl;
+                    // std::cout << "x " << i << ":" << x[i] << std::endl;
+                    // std::cout << "y " << i << ":" << y[i] << std::endl;
                     new_point.x = x[i];
                     new_point.y = y[i];
                     dummy_cloud->points.push_back(new_point);
                 }
             }
-            sensor_msgs::PointCloud2 msg;
-            pcl::toROSMsg(*dummy_cloud, msg);
-            msg.header.frame_id = "laser";
-            pc_pub.publish(msg);
+
 
             // fprintf(gnu, "plot '-' title 'Robot1 location' w p pt 7 lc rgb \"black\"\n");
             // for (int k = 0; k <= scan.ranges.size(); k++)
@@ -130,118 +127,116 @@ int main(int argc, char **argv)
             // fprintf(gnu, "e\n");
             // fflush(gnu); // gnuplot
 
-            // for (int idx=0; idx < scan.ranges.size(); idx++)
-            // {
-            //     pcl::PointXYZ new_point;
 
-            //     if (std::isnan(scan.ranges[idx])) continue;
-            //     int cuurent_index = idx;
-            //     double distance = scan.ranges[idx];
-            //     int angle_diff = CENTER_ANGLE_INDEX - cuurent_index;
-            //     double theta = STEP_ANGLE * (M_PI / 180) * angle_diff;
-            //     double angle_tate = distance* std::cos(theta);
-            //     double angle_yoko = distance* std::sin(theta);
-
-            //     // std::cout << "idx: " << idx  << " " << scan.ranges[idx] << "\n";
-            //     std::cout << "idx: " << CENTER_ANGLE_INDEX  << " " << scan.ranges[CENTER_ANGLE_INDEX] << "\n";
-            //     std::cout << "idx: " << 0  << " " << scan.ranges[0] << "\n";
-            //     std::cout << "idx: " << 725  << " " << scan.ranges[725] << "\n";
-            //     std::cout << "x " << angle_tate << std::endl;
-            //     std::cout << "y " << angle_yoko << std::endl;
-            //     new_point.x = angle_yoko;
-            //     new_point.y = angle_tate;
-            //     // new_point.z = -1;
-            //     dummy_cloud->points.push_back(new_point);
-            // }
-
-            // std::cout << "1: " << std::endl;
-
-            // if (dummy_cloud->points.size() < 1) continue;
+            if (dummy_cloud->points.size() < 1) continue;
             // std::cout << "dummy_cloud with " << dummy_cloud->width << std::endl;
             // std::cout << "dummy_cloud height " << dummy_cloud->height << std::endl;
             // std::cout << "dummy_cloud point size " << dummy_cloud->points.size() << std::endl;
             // std::cout << "dummy_cloud point[0]_x " << dummy_cloud->points[365].x << std::endl;
             // std::cout << "dummy_cloud point[0]_y " << dummy_cloud->points[365].y << std::endl;
 
-            // // sensor_msgs::PointCloud2 msg;
-            // // pcl::toROSMsg(*dummy_cloud, msg);
-            // // msg.header.frame_id = "laser";
-            // // pc_pub.publish(msg);
 
-            // /*clustering*/
-            // /*kd-treeクラスを宣言*/
-            // pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
-            // /*探索する点群をinput*/
-            // tree->setInputCloud(dummy_cloud);
-            // /*クラスタリング後のインデックスが格納されるベクトル*/
-            // std::vector<pcl::PointIndices> cluster_indices;
-            // /*今回の主役*/
-            // pcl::EuclideanClusterExtraction<pcl::PointXYZ> ece;
-            // /*距離の閾値を設定*/
-            // ece.setClusterTolerance(cluster_tolerance);
-            // /*各クラスタのメンバの最小数を設定*/
-            // ece.setMinClusterSize(min_cluster_size);
-            // /*各クラスタのメンバの最大数を設定*/
-            // ece.setMaxClusterSize(dummy_cloud->points.size());
-            // /*探索方法を設定*/
-            // ece.setSearchMethod(tree);
-            // /*クラスリング対象の点群をinput*/
-            // ece.setInputCloud(dummy_cloud);
-            // /*クラスリング実行*/
-            // ece.extract(cluster_indices);
 
-            // pcl::PointCloud<pcl::PointXYZRGB>::Ptr cluster_cloud {new pcl::PointCloud<pcl::PointXYZRGB>};
+            /*clustering*/
+            /*kd-treeクラスを宣言*/
+            pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
+            /*探索する点群をinput*/
+            tree->setInputCloud(dummy_cloud);
+            /*クラスタリング後のインデックスが格納されるベクトル*/
+            std::vector<pcl::PointIndices> cluster_indices;
+            /*今回の主役*/
+            pcl::EuclideanClusterExtraction<pcl::PointXYZ> ece;
+            /*距離の閾値を設定*/
+            ece.setClusterTolerance(cluster_tolerance);
+            /*各クラスタのメンバの最小数を設定*/
+            ece.setMinClusterSize(min_cluster_size);
+            /*各クラスタのメンバの最大数を設定*/
+            ece.setMaxClusterSize(dummy_cloud->points.size());
+            /*探索方法を設定*/
+            ece.setSearchMethod(tree);
+            /*クラスリング対象の点群をinput*/
+            ece.setInputCloud(dummy_cloud);
+            /*クラスリング実行*/
+            ece.extract(cluster_indices);
 
-            // // /*dividing（クラスタごとに点群を分割）*/
-            // pcl::ExtractIndices<pcl::PointXYZ> ei;
-            // ei.setInputCloud(dummy_cloud);
-            // ei.setNegative(false);
+            pcl::PointCloud<pcl::PointXYZRGB>::Ptr cluster_cloud {new pcl::PointCloud<pcl::PointXYZRGB>};
 
-            // std::random_device rd; // 乱数生成
-            // std::default_random_engine eng(rd()); //疑似乱数の指定
-            // std::uniform_int_distribution<int> distr(0, 255); //0 ~255の一様乱数を生成
-            // int cloud_cnt = 0;
-            // // std::cout << "3: " << std::endl;
+            // /*dividing（クラスタごとに点群を分割）*/
+            pcl::ExtractIndices<pcl::PointXYZ> ei;
+            ei.setInputCloud(dummy_cloud);
+            ei.setNegative(false);
 
-            // cluster_cloud->points.resize(dummy_cloud->points.size());
+            std::random_device rd; // 乱数生成
+            std::default_random_engine eng(rd()); //疑似乱数の指定
+            std::uniform_int_distribution<int> distr(0, 255); //0 ~255の一様乱数を生成
+            int cloud_cnt = 0;
+            // std::cout << "3: " << std::endl;
 
-            // for(size_t i=0;i<cluster_indices.size();i++){
-            //     /*extract*/
+            cluster_cloud->points.resize(dummy_cloud->points.size());
+            int obstacle_cluster[cluster_indices.size()] = {0};
+            double point_first_x = 0.0;
+            double point_first_y = 0.0;
+            double point_end_x = 0.0;
+            double point_end_y = 0.0;
+            double point_center_x[cluster_indices.size()] = {0.0};
+            double point_center_y[cluster_indices.size()] = {0.0};
+            int point_flag = 0;
 
-            //     u_int8_t cluster_red =  distr(eng); // 乱数生成0~255
-            //     u_int8_t cluster_blue =  distr(eng); // 乱数生成0~255
-            //     u_int8_t cluster_green =  distr(eng); // 乱数生成0~255
+            for(size_t i=0;i<cluster_indices.size();i++){
+                /*extract*/
+                // u_int8_t cluster_red =  distr(eng)
+                u_int8_t cluster_red =  255 - 50*i; // 乱数生成0~255
+                u_int8_t cluster_blue = 255 - 10*i; // 乱数生成0~255
+                u_int8_t cluster_green =  255; // 乱数生成0~255
 
-            //     pcl::PointCloud<pcl::PointXYZ>::Ptr tmp_clustered_points (new pcl::PointCloud<pcl::PointXYZ>);
-            //     pcl::PointIndices::Ptr tmp_clustered_indices (new pcl::PointIndices);
-            //     *tmp_clustered_indices = cluster_indices[i];
-            //     ei.setIndices(tmp_clustered_indices);
-            //     ei.filter(*tmp_clustered_points);
-            //     // std::cout << "4: " << std::endl;
+                pcl::PointCloud<pcl::PointXYZ>::Ptr tmp_clustered_points (new pcl::PointCloud<pcl::PointXYZ>);
+                pcl::PointIndices::Ptr tmp_clustered_indices (new pcl::PointIndices);
+                *tmp_clustered_indices = cluster_indices[i];
+                ei.setIndices(tmp_clustered_indices);
+                ei.filter(*tmp_clustered_points);
+                std::cout << "cluster_inices i: " << i << std::endl;
 
-            //     for (size_t j=0;j< tmp_clustered_points->points.size();j++)
-            //     {
-            //         cluster_cloud->points[cloud_cnt].x = tmp_clustered_points->points[j].x;
-            //         cluster_cloud->points[cloud_cnt].y = tmp_clustered_points->points[j].y;
-            //         cluster_cloud->points[cloud_cnt].z = tmp_clustered_points->points[j].z;
-            //         cluster_cloud->points[cloud_cnt].r = cluster_red;
-            //         cluster_cloud->points[cloud_cnt].g = cluster_green;
-            //         cluster_cloud->points[cloud_cnt].b = cluster_blue;
-            //         cloud_cnt++;
 
-            //     }
+                for (size_t j=0;j< tmp_clustered_points->points.size();j++)
+                {
+                    cluster_cloud->points[cloud_cnt].x = tmp_clustered_points->points[j].x;
+                    cluster_cloud->points[cloud_cnt].y = tmp_clustered_points->points[j].y;
+                    cluster_cloud->points[cloud_cnt].z = tmp_clustered_points->points[j].z;
+                    cluster_cloud->points[cloud_cnt].r = cluster_red;
+                    cluster_cloud->points[cloud_cnt].g = cluster_green;
+                    cluster_cloud->points[cloud_cnt].b = cluster_blue;
+                    
+                    if (point_flag == 0) 
+                    {
+                        point_first_x = cluster_cloud->points[cloud_cnt].x; 
+                        point_first_y = cluster_cloud->points[cloud_cnt].y;
+                        point_flag = 1;
 
-            // }
+                    }
+                    cloud_cnt++;
+                }
+                if(point_flag == 1){
+                    point_end_x = cluster_cloud->points[cloud_cnt - 1].x;
+                    point_end_y = cluster_cloud->points[cloud_cnt - 1].y;
+                    point_flag = 0;
+                }
+                point_center_x[i] = (point_first_x + point_end_x) /2;
+                point_center_y[i] = (point_first_y + point_end_y) /2;
+                std::cout << "point_center_x: "<< point_center_x[i] << "point_center_y: " << point_center_y[i] << std::endl;
 
-            // sensor_msgs::PointCloud2 msg;
-            // pcl::toROSMsg(*cluster_cloud, msg);
-            // msg.header.frame_id = "laser";
-            // pc_pub.publish(msg);
+            }
+
+
+
+            sensor_msgs::PointCloud2 msg;
+            pcl::toROSMsg(*cluster_cloud, msg);
+            msg.header.frame_id = "laser";
+            pc_pub.publish(msg);
         }
 
         // rate.sleep();
     }
-    fclose(gnu);
+    // fclose(gnu);
 
     return 0;
 }
